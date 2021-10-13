@@ -656,6 +656,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      */
     public class Poller implements Runnable {
 
+        //jgctodo
+        private int addEventCount = 0;
+
         private Selector selector;
         private final SynchronizedQueue<PollerEvent> events =
                 new SynchronizedQueue<>();
@@ -687,6 +690,16 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         }
 
         private void addEvent(PollerEvent event) {
+
+            //jgctodo
+            String eventName = "";
+            if (event.interestOps == 256) {
+                eventName = "注册";
+            } else if (event.interestOps == 1) {
+                eventName = "读";
+            }
+            System.out.println("Poller@" + Integer.toHexString(this.hashCode()) + "  新增event, 事件：" + eventName);
+
             events.offer(event);
             if (wakeupCounter.incrementAndGet() == 0) {
                 selector.wakeup();

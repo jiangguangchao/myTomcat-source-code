@@ -727,6 +727,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
         @Override
         public SocketState process(SocketWrapperBase<S> wrapper, SocketEvent status) {
+
+            //jgctodo
+            System.out.println("status:" + status);
+
             if (getLog().isDebugEnabled()) {
                 getLog().debug(sm.getString("abstractConnectionHandler.process",
                         wrapper.getSocket(), status));
@@ -901,6 +905,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                     // processor. Continue to poll for the next request.
                     connections.remove(socket);
                     release(processor);
+
+                    //jgctodo
+                    System.out.println("注册读事件----------");
+
                     wrapper.registerReadInterest();
                 } else if (state == SocketState.SENDFILE) {
                     // Sendfile in progress. If it fails, the socket will be
