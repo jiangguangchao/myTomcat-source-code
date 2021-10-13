@@ -1106,7 +1106,7 @@ public abstract class AbstractEndpoint<S> {
             }
             Executor executor = getExecutor();
             //jgctodo
-            System.out.println(executor);
+//            System.out.println(executor);
             if (dispatch && executor != null) {
                 executor.execute(sc);
             } else {

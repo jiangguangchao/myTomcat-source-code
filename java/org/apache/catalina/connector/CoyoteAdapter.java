@@ -362,7 +362,7 @@ public class CoyoteAdapter implements Adapter {
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
                 //jgctodo
-                System.out.println("CoyoteAdapter#service()" + Thread.currentThread().getId());
+//                System.out.println("CoyoteAdapter#service()" + Thread.currentThread().getId());
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }

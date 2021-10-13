@@ -622,7 +622,7 @@ public class Http11Processor extends AbstractProcessor {
                 try {
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
                     //jgctodo
-                    System.out.println("Http11Processor#service(socketWrapper):" + Thread.currentThread().getId());
+//                    System.out.println("Http11Processor#service(socketWrapper):" + Thread.currentThread().getId());
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both

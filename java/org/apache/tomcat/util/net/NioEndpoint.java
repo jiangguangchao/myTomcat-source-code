@@ -424,6 +424,11 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 channel.setIOChannel(socket);
                 channel.reset();
             }
+            //jgctodo
+            System.out.println();
+            System.out.println(">>>>>>  新注册socket " + socket + "@" + Integer.toHexString(socket.hashCode()) );
+            System.out.println();
+
             getPoller0().register(channel);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -870,14 +875,29 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     hasEvents = (hasEvents | events());
                 }
 
+                //jgctodo
+                if (keyCount > 0) {
+                    log.info("-------------------- keyCount > 0");
+                } else {
+//                    log.info("-------------------- keyCount <= 0");
+                }
+
                 Iterator<SelectionKey> iterator =
                     keyCount > 0 ? selector.selectedKeys().iterator() : null;
                 // Walk through the collection of ready keys and dispatch
                 // any active event.
                 while (iterator != null && iterator.hasNext()) {
                     SelectionKey sk = iterator.next();
+
                     iterator.remove();
                     NioSocketWrapper socketWrapper = (NioSocketWrapper) sk.attachment();
+
+                    //jgctodo
+                    SocketChannel socket = socketWrapper.getSocket().getIOChannel();
+                    System.out.println();
+                    System.out.println(">>>>>>>> 本次使用socket: " + socket + "@" + Integer.toHexString(socket.hashCode()));
+                    System.out.println();
+
                     // Attachment may be null if another thread has called
                     // cancelledKey()
                     if (socketWrapper != null) {
@@ -1607,7 +1627,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         protected void doRun() {
             NioChannel socket = socketWrapper.getSocket();
             //jgctodo
-            System.out.println("NioEndPoint#doRun():" + Thread.currentThread().getId());
+//            System.out.println("NioEndPoint#doRun():" + Thread.currentThread().getId());
             SelectionKey key = socket.getIOChannel().keyFor(socket.getPoller().getSelector());
 
             try {
