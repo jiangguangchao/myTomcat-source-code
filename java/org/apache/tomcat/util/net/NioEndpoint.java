@@ -609,8 +609,12 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         public void run() {
             if (interestOps == OP_REGISTER) {
                 try {
-                    socket.getIOChannel().register(
+                    SelectionKey key = socket.getIOChannel().register(
                             socket.getPoller().getSelector(), SelectionKey.OP_READ, socketWrapper);
+
+                    //jgctodo
+                    System.out.println("注册到selector的key：" + key + ",  key.interestOps()：" + key.interestOps());
+
                 } catch (Exception x) {
                     log.error(sm.getString("endpoint.nio.registerFail"), x);
                 }
@@ -628,6 +632,12 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     } else {
                         final NioSocketWrapper socketWrapper = (NioSocketWrapper) key.attachment();
                         if (socketWrapper != null) {
+
+                            //jgctodo
+                            System.out.println("当前key：" + key);
+                            System.out.println("key.interestOps()： " + key.interestOps() + ", interestOps: " + interestOps);
+
+
                             //we are registering the key to start with, reset the fairness counter.
                             int ops = key.interestOps() | interestOps;
                             socketWrapper.interestOps(ops);
@@ -909,6 +919,8 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     SocketChannel socket = socketWrapper.getSocket().getIOChannel();
                     System.out.println();
                     System.out.println(">>>>>>>> 本次使用socket: " + socket + "@" + Integer.toHexString(socket.hashCode()));
+                    System.out.println(">>>>>>>> 本次使用poller: " + "@" + Integer.toHexString(this.hashCode()));
+                    System.out.println(">>>>>>>> 本次使用selector: " + "@" + Integer.toHexString(selector.hashCode()));
                     System.out.println();
 
                     // Attachment may be null if another thread has called
@@ -1107,6 +1119,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         if ( ka == null ) {
                             cancelledKey(key); //we don't support any keys without attachments
                         } else if (close) {
+
+                            //jgctodo
+                            System.out.println("timeout方法中 如果close key.interestOps(0)");
+
                             key.interestOps(0);
                             ka.interestOps(0); //avoid duplicate stop calls
                             processKey(key,ka);
@@ -1126,6 +1142,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                                 isTimedOut = timeout > 0 && delta > timeout;
                             }
                             if (isTimedOut) {
+
+                                //jgctodo
+                                System.out.println("timeout方法中 如果isTimedOut key.interestOps(0)");
+
                                 key.interestOps(0);
                                 ka.interestOps(0); //avoid duplicate timeout calls
                                 ka.setError(new SocketTimeoutException());

@@ -63,7 +63,7 @@ public abstract class AbstractProcessorLight implements Processor {
                 state = SocketState.LONG;
             } else if (status == SocketEvent.OPEN_READ) {
                 //jgctodo
-//                System.out.println("ProcessorLight#process(socketWrapper,status)" + Thread.currentThread().getId());
+                System.out.println("调用service方法");
                 state = service(socketWrapper);
             } else if (status == SocketEvent.CONNECT_FAIL) {
                 logAccess(socketWrapper);

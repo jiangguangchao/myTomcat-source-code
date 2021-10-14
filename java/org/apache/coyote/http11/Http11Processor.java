@@ -506,6 +506,10 @@ public class Http11Processor extends AbstractProcessor {
         while (!getErrorState().isError() && keepAlive && !isAsync() && upgradeToken == null &&
                 sendfileState == SendfileState.DONE && !endpoint.isPaused()) {
 
+
+            //jgctodo
+            System.out.println("解析请求头");
+
             // Parsing the request header
             try {
                 if (!inputBuffer.parseRequestLine(keptAlive)) {
@@ -598,6 +602,10 @@ public class Http11Processor extends AbstractProcessor {
                 // Setting up filters, and parse some request headers
                 rp.setStage(org.apache.coyote.Constants.STAGE_PREPARE);
                 try {
+
+                    //jgctodo
+                    System.out.println("解析请求体");
+
                     prepareRequest();
                 } catch (Throwable t) {
                     ExceptionUtils.handleThrowable(t);
@@ -621,8 +629,10 @@ public class Http11Processor extends AbstractProcessor {
             if (getErrorState().isIoAllowed()) {
                 try {
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
+
                     //jgctodo
-//                    System.out.println("Http11Processor#service(socketWrapper):" + Thread.currentThread().getId());
+                    System.out.println("adapter 调用service方法");
+
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
@@ -656,6 +666,9 @@ public class Http11Processor extends AbstractProcessor {
                     getAdapter().log(request, response, 0);
                 }
             }
+
+            //jgctodo
+            System.out.println("本次请求结束");
 
             // Finish the handling of the request
             rp.setStage(org.apache.coyote.Constants.STAGE_ENDINPUT);

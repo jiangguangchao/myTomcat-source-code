@@ -18,9 +18,8 @@ package org.apache.coyote;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.nio.channels.SocketChannel;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,6 +41,7 @@ import org.apache.tomcat.util.collections.SynchronizedStack;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.apache.tomcat.util.net.AbstractEndpoint.Handler;
+import org.apache.tomcat.util.net.NioChannel;
 import org.apache.tomcat.util.net.SocketEvent;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
@@ -696,6 +696,9 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
     protected static class ConnectionHandler<S> implements AbstractEndpoint.Handler<S> {
 
+        //jgctodo
+        Map<SocketChannel, Integer> mySocketMap = new HashMap<SocketChannel, Integer>();
+
         private final AbstractProtocol<S> proto;
         private final RequestGroupInfo global = new RequestGroupInfo();
         private final AtomicLong registerCount = new AtomicLong(0);
@@ -832,7 +835,11 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
                 SocketState state = SocketState.CLOSED;
                 do {
+
+                    //jgctodo
+                    System.out.println("Excutor中调用process 前 state：" + state);
                     state = processor.process(wrapper, status);
+                    System.out.println("Excutor中调用process 后 state：" + state);
 
                     if (state == SocketState.UPGRADING) {
                         // Get the HTTP upgrade handler
@@ -901,6 +908,22 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                         getProtocol().addWaitingProcessor(processor);
                     }
                 } else if (state == SocketState.OPEN) {
+
+                    //jgctodo
+//                    Map<SocketChannel, Integer> mySocketMap = new HashMap<SocketChannel, Integer>();
+                    NioChannel nioChannel = (NioChannel) socket;
+                    SocketChannel socketChannel = nioChannel.getIOChannel();
+                    if (mySocketMap.containsKey(socketChannel)) {
+                        mySocketMap.put(socketChannel, mySocketMap.get(socketChannel) + 1);
+                    } else {
+                        mySocketMap.put(socketChannel, 1);
+                    }
+                    System.out.println("本次请求已经处理完毕, 本次socket：" + nioChannel.getIOChannel() + "@" + Integer.toHexString(nioChannel.getIOChannel().hashCode()));
+                    mySocketMap.forEach((k, v) -> {
+                        System.out.println("socket使用情况：" + Integer.toHexString(k.hashCode()) + ", 次数：" + v);
+                    });
+
+
                     // In keep-alive but between requests. OK to recycle
                     // processor. Continue to poll for the next request.
                     connections.remove(socket);
